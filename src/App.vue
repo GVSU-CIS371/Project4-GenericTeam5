@@ -80,6 +80,22 @@
         </div>
       </div>
     </div>
+
+    <!--Name block to save name of drink-->
+    <form @submit.prevent="saveChoices">
+      <input type="text" v-model="name" placeholder="Enter Name">
+      <button type="submit">Save Choices</button>
+    </form>
+
+    <!-- Display saved items -->
+    <div v-if="savedItems.length > 0">
+      <h3>Saved Items:</h3>
+      <ul>
+        <li v-for="(item, index) in savedItems" :key="index" @click="applySavedChoices(item)" class="saved-item">
+          <span>{{ item.name }}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -95,6 +111,43 @@ const syrups = ref(["None", "Vanilla", "Caramel", "Hazelnut"]);
 const currentSyrup = ref("None");
 const baseBeverages = ref(["Coffee", "Green Tea", "Black Tea"]);
 const currentBeverage = ref("Coffee");
+
+// Define reactive data
+const name = ref('');
+const selectedChoices = ref({});
+
+// Function to update selected choices
+const updateSelectedChoices = (key, value) => {
+  selectedChoices.value[key] = value;
+};
+
+const saveChoices = () => {
+  // Save name and choices
+  savedItems.value.push({ 
+    name: name.value, 
+    currentTemp: currentTemp.value,
+    currentCreamer: currentCreamer.value,
+    currentSyrup: currentSyrup.value,
+    currentBeverage: currentBeverage.value 
+  });
+  // Clear the name input
+  name.value = '';
+};
+
+// Function to apply saved choices
+const applySavedChoices = (item) => {
+  // Update the name field
+  name.value = item.name;
+  // Update the current selections
+  currentTemp.value = item.currentTemp;
+  currentCreamer.value = item.currentCreamer;
+  currentSyrup.value = item.currentSyrup;
+  currentBeverage.value = item.currentBeverage;
+};
+
+// Array to store saved items
+const savedItems = ref([]);
+
 </script>
 
 <style lang="scss">
@@ -210,4 +263,9 @@ ul {
   color: rgb(var(--v-theme-on-secondary));
   height: calc(var(--v-btn-height) + 0px);
 }
+
+.saved-item:hover {
+  cursor: pointer;
+}
+
 </style>
