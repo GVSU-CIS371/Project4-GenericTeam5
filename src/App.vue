@@ -167,9 +167,10 @@ ul {
 .dropbtn {
   background-color: #4caf50;
   color: white;
-  padding: 16px;
+  padding: 18px;
   font-size: 16px;
   border: none;
+  border-radius: 8px;
 }
 
 /* Dropdown button on hover & focus */
@@ -182,6 +183,7 @@ ul {
   position: relative;
   display: inline-block;
   margin-right: 10px; /* Add some margin between buttons */
+  margin-bottom: 10px;
 }
 
 /* Dropdown content (hidden by default) */
@@ -258,14 +260,36 @@ ul {
   --v-btn-height: 36px;
   font-size: var(--v-btn-size);
   min-width: 64px;
-  padding: 0 16px;
+  padding: 1 25px;
   background: rgb(var(--v-theme-secondary));
   color: rgb(var(--v-theme-on-secondary));
   height: calc(var(--v-btn-height) + 0px);
 }
-
+h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 25px;
+  
+}
 .saved-item:hover {
   cursor: pointer;
 }
+.saved-item {
+  color: #f1f1f1;
+  font-size: 18px;
+}
 
+.saved-item input[type="radio"] {
+  display: none; /* Hide the default radio button */
+}
+.saved-item label {
+  display: inline-block;
+  cursor: pointer;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 5px;
+}
+.saved-item input[type="radio"]:checked + label {
+  background-color: #e2f2ff; /* Style for selected item */
+}
 </style>
