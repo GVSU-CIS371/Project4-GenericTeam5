@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div>
-    <!-- custom button? Text is correct-->
-    <button class="custom-button">Your Button</button>
-  </div>
     <Beverage
       :isIced="currentTemp === 'Cold'"
       :creamer="currentCreamer"
@@ -80,21 +76,26 @@
         </div>
       </div>
     </div>
-
-    <!--Name block to save name of drink-->
-    <form @submit.prevent="saveChoices">
+    <!-- Form to enter name and save choices -->
+    <form @submit.prevent="makeBeverage">
       <input type="text" v-model="name" placeholder="Enter Name">
-      <button type="submit">Save Choices</button>
+      <button type="submit">Make Beverage</button>
     </form>
 
-    <!-- Display saved items -->
-    <div v-if="savedItems.length > 0">
+    <!-- Display saved recipes -->
+    <div v-if="recipes.length > 0">
       <h3>Saved Items:</h3>
       <ul>
-        <li v-for="(item, index) in savedItems" :key="index" @click="applySavedChoices(item)" class="saved-item">
-          <span>{{ item.name }}</span>
+        <li v-for="(recipe, index) in recipes" :key="index" @click="toggleSelection(recipe)" :class="{ 'selected': recipe.selected }" class="saved-item">
+          <span>{{ recipe.name }}</span>
         </li>
       </ul>
+    </div>
+
+    <!-- Display selected beverage -->
+    <div v-if="selectedRecipe">
+      <h3>Selected Beverage:</h3>
+      <!-- Display the selected beverage based on the selectedRecipe -->
     </div>
   </div>
 </template>
@@ -114,40 +115,64 @@ const currentBeverage = ref("Coffee");
 
 // Define reactive data
 const name = ref('');
-const selectedChoices = ref({});
+//const selectedChoices = ref({});
+import { useBeverageStore } from './store';
 
-// Function to update selected choices
-const updateSelectedChoices = (key, value) => {
-  selectedChoices.value[key] = value;
-};
+const beverageStore = useBeverageStore();
 
-const saveChoices = () => {
-  // Save name and choices
-  savedItems.value.push({ 
-    name: name.value, 
-    currentTemp: currentTemp.value,
-    currentCreamer: currentCreamer.value,
-    currentSyrup: currentSyrup.value,
-    currentBeverage: currentBeverage.value 
-  });
+const makeBeverage = () => {
+  // Get current selections
+  const currentTemp = beverageStore.currentTemp;
+  const currentCreamer = beverageStore.currentCreamer;
+  const currentSyrup = beverageStore.currentSyrup;
+  const currentBeverage = beverageStore.currentBeverage;
+
+  // Save selections as a recipe
+  const recipe = {
+    name: name.value,
+    currentTemp,
+    currentCreamer,
+    currentSyrup,
+    currentBeverage,
+  };
+  beverageStore.addRecipe(recipe);
+
   // Clear the name input
   name.value = '';
 };
 
-// Function to apply saved choices
-const applySavedChoices = (item) => {
-  // Update the name field
-  name.value = item.name;
-  // Update the current selections
-  currentTemp.value = item.currentTemp;
-  currentCreamer.value = item.currentCreamer;
-  currentSyrup.value = item.currentSyrup;
-  currentBeverage.value = item.currentBeverage;
+const showBeverage = (recipe) => {
+  beverageStore.setSelectedRecipe(recipe);
 };
 
-// Array to store saved items
-const savedItems = ref([]);
+const recipes = beverageStore.recipes;
+const selectedRecipe = beverageStore.selectedRecipe;
 
+const toggleSelection = (recipe) => {
+  // Deselect all recipes
+  recipes.forEach((r) => {
+    r.selected = false;
+  });
+
+  // Toggle the 'selected' property of the clicked recipe
+  recipe.selected = true;
+
+  // Update current selections
+  beverageStore.currentTemp = recipe.currentTemp;
+  beverageStore.currentCreamer = recipe.currentCreamer;
+  beverageStore.currentSyrup = recipe.currentSyrup;
+  beverageStore.currentBeverage = recipe.currentBeverage;
+  recipe.setSelectedRecipe(selectedRecipe)
+};
+
+const showRecipeDetails = (recipe) => {
+  // Show the corresponding beverage details
+  // Update current selections
+  currentTemp.value = recipe.currentTemp;
+  currentCreamer.value = recipe.currentCreamer;
+  currentSyrup.value = recipe.currentSyrup;
+  currentBeverage.value = recipe.currentBeverage;
+};
 </script>
 
 <style lang="scss">
@@ -170,6 +195,20 @@ ul {
   padding: 16px;
   font-size: 16px;
   border: none;
+}
+
+.toggle-button {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background-color: transparent;
+  cursor: pointer;
+  margin-right: 10px; /* Add some margin between the button and recipe name */
+}
+
+.toggle-button.selected {
+  background-color: #4caf50; /* Change background color when selected */
 }
 
 /* Dropdown button on hover & focus */
