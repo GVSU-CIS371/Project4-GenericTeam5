@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div>
-    <!-- custom button? Text is correct-->
-    <button class="custom-button">Your Button</button>
-  </div>
     <Beverage
       :isIced="currentTemp === 'Cold'"
       :creamer="currentCreamer"
@@ -92,7 +88,7 @@
       <h3>Saved Items:</h3>
       <ul>
         <li v-for="(item, index) in savedItems" :key="index" @click="applySavedChoices(item)" class="saved-item">
-          <span>{{ item.name }}</span>
+          <span>{{ item.name as string }}</span>
         </li>
       </ul>
     </div>
@@ -100,7 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
+//import { defineComponent } from 'vue';
 import Beverage from "./components/Beverage.vue";
 // Define reactive data
 const temps = ref(["Hot", "Cold"]);
@@ -112,14 +109,26 @@ const currentSyrup = ref("None");
 const baseBeverages = ref(["Coffee", "Green Tea", "Black Tea"]);
 const currentBeverage = ref("Coffee");
 
+// Define the type for saved items
+interface SavedItem {
+  name: string;
+  currentTemp: string;
+  currentCreamer: string;
+  currentSyrup: string;
+  currentBeverage: string;
+}
+
+// Array to store saved items
+const savedItems = ref<SavedItem[]>([]);
+
 // Define reactive data
 const name = ref('');
-const selectedChoices = ref({});
+//const selectedChoices = ref({});
 
 // Function to update selected choices
-const updateSelectedChoices = (key, value) => {
-  selectedChoices.value[key] = value;
-};
+//const updateSelectedChoices = (key, value) => {
+//  selectedChoices.value[key] = value;
+//};
 
 const saveChoices = () => {
   // Save name and choices
@@ -135,7 +144,7 @@ const saveChoices = () => {
 };
 
 // Function to apply saved choices
-const applySavedChoices = (item) => {
+const applySavedChoices = (item: { name: any; currentTemp: any; currentCreamer: any; currentSyrup: any; currentBeverage: any; }) => {
   // Update the name field
   name.value = item.name;
   // Update the current selections
@@ -144,9 +153,6 @@ const applySavedChoices = (item) => {
   currentSyrup.value = item.currentSyrup;
   currentBeverage.value = item.currentBeverage;
 };
-
-// Array to store saved items
-const savedItems = ref([]);
 
 </script>
 
